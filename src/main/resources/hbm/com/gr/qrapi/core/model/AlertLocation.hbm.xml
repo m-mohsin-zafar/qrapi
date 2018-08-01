@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="com.gr.qrapi.core.model.AlertLocation" table="qr_alert_location">
+        <id name="id" type="int">
+            <column name="location_id" />
+            <generator class="native" />
+        </id>
+        <property name="city" type="java.lang.String">
+            <column name="city" />
+        </property>
+        <property name="country" type="java.lang.String">
+            <column name="country" />
+        </property>
+        <many-to-one name="alertProfile" class="com.gr.qrapi.core.model.AlertProfile" fetch="join" not-null="true" update="false" insert="false">
+            <column name="profile_id" />
+        </many-to-one>
+    </class>
+</hibernate-mapping>

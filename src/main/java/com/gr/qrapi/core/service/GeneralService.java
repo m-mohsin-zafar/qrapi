@@ -21,6 +21,6 @@ public class GeneralService implements GeneralServiceLocal {
 	
 	@Override
 	public List<Account> getAllAccounts() {
-		return AccountDaoHibernateImpl.getDao().getAllAccounts();
+		return AccountDaoHibernateImpl.getDao().viewAllAccounts();
 	}
 }
