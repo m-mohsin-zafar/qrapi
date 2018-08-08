@@ -2,12 +2,14 @@ package com.gr.qrapi.core.dao;
 
 import java.util.List;
 
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.gr.common.dao.AbstractHibernateDao;
 import com.gr.common.dao.DaoManager;
+import com.gr.common.exception.DaoException;
 import com.gr.qrapi.core.model.Contact;
 import com.gr.qrapi.core.model.Account;
 import com.gr.qrapi.core.model.ContactAddress;
@@ -21,12 +23,8 @@ public class ContactDaoHibernateImpl extends AbstractHibernateDao<Contact, Integ
 		return DaoManager.getInstance().getDao(ContactDao.class);
 	}
 
-	@SuppressWarnings("null")
 	@Override
-	public Contact addContact(String firstName, String lastName, String emailAddress, String gender, String phoneNumber,
-			String status, int accountId, String streetAddress, String city, String state, String country) {
-		Contact contact = null;
-		ContactAddress contactAddress = null;
+	public Contact addContact(int accountId, Contact contact, ContactAddress contactAddress) {
 
 		Session session = getSession();
 		Transaction tx = null;
@@ -37,75 +35,83 @@ public class ContactDaoHibernateImpl extends AbstractHibernateDao<Contact, Integ
 
 			if (account != null) {
 
-				if (!firstName.isEmpty() && !lastName.isEmpty() && !emailAddress.isEmpty() && !gender.isEmpty()
-						&& !phoneNumber.isEmpty() && !status.isEmpty()
-						&& (status.equals("Active") || status.equals("InActive")) && !streetAddress.isEmpty()
-						&& !city.isEmpty() && !state.isEmpty() && !country.isEmpty()) {
+				if (!contact.getFirstName().isEmpty() && !contact.getLastName().isEmpty() && !contact.getEmailAddress().isEmpty() && !contact.getGender().isEmpty()
+						&& !contact.getPhoneNumber().isEmpty() && !contact.getStatus().isEmpty()
+						&& (contact.getStatus().equals("Active") || contact.getStatus().equals("InActive")) && !contactAddress.getStreetAddress().isEmpty()
+						&& !contactAddress.getCity().isEmpty() && !contactAddress.getState().isEmpty() && !contactAddress.getCountry().isEmpty() ) {
 
-					contact = new Contact(firstName, lastName, emailAddress, gender, phoneNumber, status, account);
-					contactAddress = new ContactAddress(streetAddress, city, state, country, contact);
+					
+					List<Contact> contacts = account.getContacts();
+					contacts.add(contact);
+					account.setContacts(contacts);
+					
+					List<ContactAddress> contactAddresses = contact.getContactAddresses();
+					contactAddresses.add(contactAddress);
+					contact.setContactAddresses(contactAddresses);
 
 					tx = session.beginTransaction();
-					session.save(contact);
-					session.save(contactAddress);
+					
+					session.saveOrUpdate(account);
+					session.saveOrUpdate(contacts);
+					session.saveOrUpdate(contactAddresses);
+
 					tx.commit();
 
 				}
 			}
 
-		} catch (HibernateException e) {
+		} catch (Exception e) {
 			if (tx != null)
 				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			closeSession(session);
+			throw new DaoException(e);
 		}
 
 		
-		if (contact != null) {
-//			List<ContactAddress> cont = null;
-			if (contact.getContactAddress() == null) {
-//				cont.add(contactAddress);
-				contact.setContactAddress(contactAddress);
-			}
-		}
 		return contact;
 	}
 
+	
+	/* Checked via POSTMAN */
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Contact> viewContacts() {
 
-		Session session = getSession();
-		Transaction tx = null;
+		List<Contact> contacts = null;
+
+		try {
+			Session session = getSession();
+			Criteria criteria = session.createCriteria(Contact.class);
+			
+			contacts = (List<Contact>) criteria.list();
+			
+		} catch (Exception e) {
+			
+			throw new DaoException(e);
+		}
+		return contacts;
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Contact> getContactsById (int AccountId) {
 
 		List<Contact> contacts = null;
 
 		try {
-
-			tx = session.beginTransaction();
-
-			contacts = session.createQuery("From Contact").list();
-
-			tx.commit();
-		} catch (HibernateException e) {
-			if (tx != null)
-				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			closeSession(session);
+			Session session = getSession();
+			Account account = (Account) session.get(Account.class, AccountId);
+			
+			contacts = account.getContacts();
+			
+		} catch (Exception e) {
+			
+			throw new DaoException(e);
 		}
-
 		return contacts;
 	}
 
 	@Override
-	public Contact updateContact(int id, String firstName, String lastName, String emailAddress, String gender,
-			String phoneNumber, String status, int accountId, String streetAddress, String city, String state,
-			String country) {
-
-		Contact contact = null;
-		ContactAddress contactAddress = null;
+	public Contact updateContact(int accountId, Contact contact, ContactAddress contactAddress) {
 
 		Session session = getSession();
 		Transaction tx = null;
@@ -114,105 +120,63 @@ public class ContactDaoHibernateImpl extends AbstractHibernateDao<Contact, Integ
 
 			tx = session.beginTransaction();
 
-			contact = (Contact) session.get(Contact.class, id);
-			Contact original = contact;
+			Account account = (Account) session.get(Account.class, accountId);
+			Contact original = (Contact) session.get(Contact.class, contact.getId());
+			ContactAddress originalAddress = original.getContactAddresses().get(0);
 
-			if (contact != null) {
+			if (account != null) {
+				if (contact != null) {
 
-				if (!firstName.isEmpty()) {
-					contact.setFirstName(firstName);
-				} else {
-					contact.setFirstName(original.getFirstName());
+					if (contact.getFirstName().isEmpty()) {
+						contact.setFirstName(original.getFirstName());
+					} 
+					if (contact.getLastName().isEmpty()) {
+						contact.setLastName(original.getLastName());
+					} 
+					if (contact.getEmailAddress().isEmpty()) {
+						contact.setEmailAddress(original.getEmailAddress());
+					}
+					if (contact.getGender().isEmpty()) {
+						contact.setGender(original.getGender());
+					}
+					if (contact.getPhoneNumber().isEmpty()) {
+						contact.setPhoneNumber(original.getPhoneNumber());
+					} 
+					if (contact.getStatus().isEmpty()) {
+						contact.setStatus(original.getStatus());
+					} 
+					if (contactAddress.getStreetAddress().isEmpty()) {
+						contactAddress.setStreetAddress(originalAddress.getStreetAddress());
+					}
+					if (contactAddress.getCity().isEmpty()) {
+						contactAddress.setCity(originalAddress.getCity());
+					}
+					if (contactAddress.getState().isEmpty()) {
+						contactAddress.setState(originalAddress.getState());
+					}
+					if (contactAddress.getCountry().isEmpty()) {
+						contactAddress.setCountry(originalAddress.getCountry());
+					}
+
+					session.update(contact);
+					session.update(contactAddress);
+
+					tx.commit();
+
 				}
-
-				if (!lastName.isEmpty()) {
-					contact.setLastName(lastName);
-				} else {
-					contact.setLastName(original.getLastName());
-				}
-
-				if (!emailAddress.isEmpty()) {
-					contact.setEmailAddress(emailAddress);
-				} else {
-					contact.setEmailAddress(original.getEmailAddress());
-				}
-
-				if (!gender.isEmpty()) {
-					contact.setGender(gender);
-				} else {
-					contact.setGender(original.getGender());
-				}
-
-				if (!phoneNumber.isEmpty()) {
-					contact.setPhoneNumber(phoneNumber);
-				} else {
-					contact.setPhoneNumber(original.getPhoneNumber());
-				}
-
-				if (!status.isEmpty()) {
-					contact.setStatus(status);
-				} else {
-					contact.setStatus(original.getStatus());
-				}
-
-				//Please Revisit this condition
-				Account account = (Account) session.get(Account.class, accountId);
-				if (account != null) {
-					contact.setAccount(account);
-				} else {
-					contact.setAccount(null);
-				}
-
-//				contactAddress = contact.getContactAddress().get(0);
-				contactAddress = contact.getContactAddress();
-
-				if (!streetAddress.isEmpty()) {
-					contactAddress.setStreetAddress(streetAddress);
-				} else {
-//					contactAddress.setStreetAddress(original.getContactAddress().get(0).getStreetAddress());
-					contactAddress.setCountry(original.getContactAddress().getStreetAddress());
-				}
-
-				if (!city.isEmpty()) {
-					contactAddress.setCity(city);
-				} else {
-//					contactAddress.setCity(original.getContactAddress().get(0).getCity());
-					contactAddress.setCountry(original.getContactAddress().getCity());
-				}
-
-				if (!state.isEmpty()) {
-					contactAddress.setState(state);
-				} else {
-//					contactAddress.setState(original.getContactAddress().get(0).getState());
-					contactAddress.setCountry(original.getContactAddress().getState());
-				}
-
-				if (!country.isEmpty()) {
-					contactAddress.setCountry(country);
-				} else {
-//					contactAddress.setCountry(original.getContactAddress().get(0).getCountry());
-					contactAddress.setCountry(original.getContactAddress().getCountry());
-				}
-
-				session.update(contact);
-				session.update(contactAddress);
-
-				tx.commit();
-
 			}
 
-		} catch (HibernateException e) {
+		} catch (Exception e) {
 			if (tx != null)
 				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			if (contact != null) {
-				contact = (Contact) session.get(Contact.class, id);
-			}
-			closeSession(session);
+			throw new DaoException(e);
 		}
-
 		
+		//Revisit this condition
+//		if (contact != null) {
+//			contact = (Contact) session.get(Contact.class, id);
+//		}
+
 		return contact;
 	}
 
@@ -220,7 +184,6 @@ public class ContactDaoHibernateImpl extends AbstractHibernateDao<Contact, Integ
 	public void deleteContact(int id) {
 
 		Contact contact = null;
-		ContactAddress contactAddress = null;
 
 		Session session = getSession();
 		Transaction tx = null;
@@ -232,11 +195,6 @@ public class ContactDaoHibernateImpl extends AbstractHibernateDao<Contact, Integ
 			contact = (Contact) session.get(Contact.class, id);
 
 			if (contact != null) {
-//				contactAddress = contact.getContactAddress().get(0);
-				contactAddress = contact.getContactAddress();
-				if (contactAddress != null) {
-					session.delete(contactAddress);
-				}
 				session.delete(contact);
 				tx.commit();
 			}
@@ -250,5 +208,23 @@ public class ContactDaoHibernateImpl extends AbstractHibernateDao<Contact, Integ
 		}
 
 	}
+	
+	
+	
+	
+	
+	
+/*	Commented Out
+	contactAddress = contact.getContactAddress();
+	if (contactAddress != null) {
+		session.delete(contactAddress);
+	}
+	if (contact != null) {
+			if (contact.getContactAddress() == null) {
+				contact.setContactAddress(contactAddress);
+			}
+		}
+		
+*/
 
 }

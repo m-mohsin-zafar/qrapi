@@ -14,8 +14,5 @@
         <property name="country" type="java.lang.String">
             <column name="country" />
         </property>
-        <many-to-one name="alertProfile" class="com.gr.qrapi.core.model.AlertProfile" fetch="join" not-null="true" update="false" insert="false">
-            <column name="profile_id" />
-        </many-to-one>
     </class>
 </hibernate-mapping>

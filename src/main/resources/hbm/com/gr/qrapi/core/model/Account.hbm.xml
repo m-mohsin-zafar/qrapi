@@ -16,20 +16,22 @@
         <property name="timeZone" type="java.lang.String">
             <column name="time_zone" />
         </property>
-        <!-- Changed lazy = 'false' from 'true'... -->
-        <!-- Changing inverse = 'true' -->
-        <bag name="contacts" inverse="true" table="qr_contact" lazy="false" >
-            <key not-null="true">
+        <property name="userName" type="java.lang.String">
+            <column name="user_name" />
+        </property>
+        <property name="passWord" type="java.lang.String">
+            <column name="password" />
+        </property>
+        <bag name="contacts" inverse="false" table="qr_contact" lazy="false" >
+            <key>
                 <column name="account_id" />
             </key>
-<!--             <list-index></list-index> -->
             <one-to-many class="com.gr.qrapi.core.model.Contact" />
         </bag>
-        <bag name="alertProfiles" inverse="true" table="qr_alert_profile" lazy="false" >
-            <key not-null="true">
+        <bag name="alertProfiles" inverse="false" table="qr_alert_profile" lazy="false" >
+            <key>
                 <column name="account_id" />
             </key>
-<!--             <list-index></list-index> -->
             <one-to-many class="com.gr.qrapi.core.model.AlertProfile" />
         </bag>
     </class>

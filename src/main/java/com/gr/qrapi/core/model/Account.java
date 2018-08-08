@@ -3,33 +3,16 @@ package com.gr.qrapi.core.model;
 import java.io.Serializable;
 import java.util.List;
 
-//@Entity
-//@Table(name = "qr_account")
 public class Account implements Serializable{
-
-/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-//	@Id
-//	@GeneratedValue(strategy = GenerationType.IDENTITY)
-//	@Column(name = "id")
-	private int id;
-
-//	@Column(name = "name", length=50)
-	private String name;
-
-//	@Column(name = "email_address", length=60)
-	private String emailAddress;
-
-//	@Column(name = "time_zone", length=8)
-	private String timeZone;
 	
-//	@OneToMany(mappedBy="account")
+	private static final long serialVersionUID = 1L;
+	private int id;
+	private String name;
+	private String emailAddress;
+	private String timeZone;
+	private String userName;
+	private String passWord;
 	private List<Contact> contacts;
-
-//	@OneToMany(mappedBy="account")
 	private List<AlertProfile> alertProfiles;
 	
 	public Account() {
@@ -73,7 +56,6 @@ public class Account implements Serializable{
 	public void setTimeZone(String timeZone) {
 		this.timeZone = timeZone;
 	}
-
 	
 	public List<Contact> getContacts() {
 		return contacts;
@@ -81,7 +63,7 @@ public class Account implements Serializable{
 
 	public void setContacts(List<Contact> contacts) {
 		this.contacts = contacts;
-	}
+	} 
 
 	public List<AlertProfile> getAlertProfiles() {
 		return alertProfiles;
@@ -94,6 +76,22 @@ public class Account implements Serializable{
 	@Override
 	public String toString() {
 		return "Account [id=" + id + ", name=" + name + ", emailAddress=" + emailAddress + ", timeZone=" + timeZone + "]";
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getPassWord() {
+		return passWord;
+	}
+
+	public void setPassWord(String passWord) {
+		this.passWord = passWord;
 	}
 
 	

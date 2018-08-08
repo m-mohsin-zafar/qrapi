@@ -26,19 +26,12 @@
 		<property name="status" type="java.lang.String">
 			<column name="status" />
 		</property>
-		<many-to-one name="account"
-			class="com.gr.qrapi.core.model.Account" fetch="join" not-null="true" update="false" insert="false">
-			<column name="account_id" />
-		</many-to-one>
-		<one-to-one name="contactAddress" property-ref="contact" class="com.gr.qrapi.core.model.ContactAddress"></one-to-one>
-<!-- 		<bag name="contactAddress" inverse="false" -->
-<!-- 			table="qr_contact_address" lazy="true"> -->
-<!-- 			<key> -->
-<!-- 				<column name="contact_id" /> -->
-<!-- 			</key> -->
-<!-- 			 <list-index></list-index> -->
-<!-- 			<one-to-many -->
-<!-- 				class="com.gr.qrapi.core.model.ContactAddress" /> -->
-<!-- 		</bag> -->
+		<bag name="contactAddresses" inverse="false" table="qr_contact" lazy="false" >
+            <key>
+                <column name="contact_id" />
+            </key>
+            <one-to-many class="com.gr.qrapi.core.model.ContactAddress" />
+        </bag>
 	</class>
 </hibernate-mapping>
+

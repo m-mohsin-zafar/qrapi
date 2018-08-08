@@ -3,27 +3,25 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-    <class name="com.gr.qrapi.core.model.ContactAddress" table="qr_contact_address">
-        <id name="id" type="int" access="field">
-            <column name="address_id" />
-            <generator class="native" />
-        </id>
-        <property name="streetAddress" type="java.lang.String">
-            <column name="street_address" />
-        </property>
-        <property name="city" type="java.lang.String">
-            <column name="city" />
-        </property>
-        <property name="state" type="java.lang.String">
-            <column name="state" />
-        </property>
-        <property name="country" type="java.lang.String">
-            <column name="country" />
-        </property>
-        <many-to-one name="contact"
-			class="com.gr.qrapi.core.model.Contact" fetch="join" unique="true" not-null="true">
-			<column name="contact_id" />
-		</many-to-one>
-<!--         <one-to-one name="contact" class="com.gr.qrapi.core.model.Contact"></one-to-one> -->
-    </class>
+	<class name="com.gr.qrapi.core.model.ContactAddress"
+		table="qr_contact_address">
+
+		<!-- Removed Access = field -->
+		<id name="id" type="int">
+			<column name="address_id" />
+			<generator class="native" />
+		</id>
+		<property name="streetAddress" type="java.lang.String">
+			<column name="street_address" />
+		</property>
+		<property name="city" type="java.lang.String">
+			<column name="city" />
+		</property>
+		<property name="state" type="java.lang.String">
+			<column name="state" />
+		</property>
+		<property name="country" type="java.lang.String">
+			<column name="country" />
+		</property>
+	</class>
 </hibernate-mapping>

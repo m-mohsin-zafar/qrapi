@@ -8,6 +8,7 @@ import org.hibernate.Transaction;
 
 import com.gr.common.dao.AbstractHibernateDao;
 import com.gr.common.dao.DaoManager;
+import com.gr.common.exception.DaoException;
 import com.gr.qrapi.core.model.AlertLocation;
 import com.gr.qrapi.core.model.AlertProfile;
 
@@ -39,23 +40,24 @@ public class AlertLocationDaoHibernateImpl extends AbstractHibernateDao<AlertLoc
 					alertLocation = new AlertLocation();
 					alertLocation.setCity(city);
 					alertLocation.setCountry(country);
-					alertLocation.setAlertProfile(alertProfile);
+					
+					List<AlertLocation> alertLocations = alertProfile.getLocations();
+					alertLocations.add(alertLocation);
+					alertProfile.setLocations(alertLocations);
 
 					tx = session.beginTransaction();
 					session.save(alertLocation);
+					session.update(alertProfile);
 					tx.commit();
 
 				}
 			}
 
-		} catch (HibernateException e) {
+		} catch (Exception e) {
 			if (tx != null)
 				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			closeSession(session);
-		}
-
+			throw new DaoException(e);
+		} 
 		return alertLocation;
 	}
 
@@ -76,14 +78,11 @@ public class AlertLocationDaoHibernateImpl extends AbstractHibernateDao<AlertLoc
 
 			tx.commit();
 
-		} catch (HibernateException e) {
+		} catch (Exception e) {
 			if (tx != null)
 				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			closeSession(session);
-		}
-
+			throw new DaoException(e);
+		} 
 		return alertLocations;
 	}
 
@@ -120,20 +119,21 @@ public class AlertLocationDaoHibernateImpl extends AbstractHibernateDao<AlertLoc
 						alertLocation.setCountry(original.getCountry());
 					}
 
-					alertLocation.setAlertProfile(alertProfile);
+					List<AlertLocation> alertLocations = alertProfile.getLocations();
+					alertLocations.add(alertLocation);
+					alertProfile.setLocations(alertLocations);
 
 					session.update(alertLocation);
+					session.update(alertProfile);
 					tx.commit();
 				}
 			}
 
-		} catch (HibernateException e) {
+		} catch (Exception e) {
 			if (tx != null)
 				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			closeSession(session);
-		}
+			throw new DaoException(e);
+		} 
 
 		if (alertLocation != null) {
 			alertLocation = (AlertLocation) session.get(AlertLocation.class, id);
@@ -163,14 +163,11 @@ public class AlertLocationDaoHibernateImpl extends AbstractHibernateDao<AlertLoc
 
 			}
 
-		} catch (HibernateException e) {
+		} catch (Exception e) {
 			if (tx != null)
 				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			closeSession(session);
-		}
-		
+			throw new DaoException(e);
+		} 
 	}
 	
 }

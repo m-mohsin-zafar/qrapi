@@ -2,12 +2,14 @@ package com.gr.qrapi.core.dao;
 
 import java.util.List;
 
-import org.hibernate.HibernateException;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Restrictions;
 
 import com.gr.common.dao.AbstractHibernateDao;
 import com.gr.common.dao.DaoManager;
+import com.gr.common.exception.DaoException;
 import com.gr.qrapi.core.model.Account;
 import com.gr.qrapi.core.model.AlertProfile;
 import com.gr.qrapi.core.model.Contact;
@@ -21,139 +23,111 @@ public class AccountDaoHibernateImpl extends AbstractHibernateDao<Account, Integ
 		return DaoManager.getInstance().getDao(AccountDao.class);
 	}
 
-//	@SuppressWarnings("unchecked")
-//	@Override
-//	public List<Account> getAllAccounts() {
-//		
-//		try {
-//			Session session = getSession();
-//			Criteria criteria = session.createCriteria(Account.class);
-//			criteria.setMaxResults(100);
-//
-//			List<Account> accounts = (List<Account>) criteria.list();
-//
-//			return accounts;
-//		} catch (Exception aex) {
-//			throw new DaoException(aex);
-//		}
-//	}
-
 	@Override
-	public Account addAccount(String name, String emailAddress, String timeZone) {
-
-		Account account = null;
-
-		Session session = getSession();
+	public Account addAccount(Account account) {
 		Transaction tx = null;
-
 		try {
+			
+			if (account != null) {
 
-			if (name != null && emailAddress != null && timeZone != null) {
+				Session session = getSession();
+				
 
-				if (!name.isEmpty() && !emailAddress.isEmpty() && !timeZone.isEmpty()) {
+				if (account.getName() != null && account.getEmailAddress() != null && account.getTimeZone() != null) {
 
-					account = new Account();
-					account.setName(name);
-					account.setEmailAddress(emailAddress);
-					account.setTimeZone(timeZone);
+					if (!account.getName().isEmpty() && !account.getEmailAddress().isEmpty()
+							&& !account.getTimeZone().isEmpty()) {
 
-					tx = session.beginTransaction();
-					session.save(account);
-					tx.commit();
+						tx = session.beginTransaction();
+						session.save(account);
+						tx.commit();
+					}
+
 				}
-
 			}
-
-		} catch (HibernateException e) {
+		} catch (Exception aex) {
 			if (tx != null)
 				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			closeSession(session);
+			throw new DaoException(aex);
 		}
 		return account;
 	}
 
+	/* Checked via POSTMAN */
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Account> viewAllAccounts() {
 
-		Transaction tx = null;
-		Session session = getSession();
-
 		List<Account> accounts = null;
-
 		try {
+			Session session = getSession();
+			Criteria criteria = session.createCriteria(Account.class);
 
-			tx = session.beginTransaction();
+			accounts = (List<Account>) criteria.list();
 
-			accounts = session.createQuery("From Account").list();
-
-			tx.commit();
-
-		} catch (HibernateException e) {
-			if (tx != null)
-				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			closeSession(session);
+		} catch (Exception aex) {
+			throw new DaoException(aex);
 		}
-
 		return accounts;
 	}
 
-	@Override
-	public Account updateAccount(int id, String name, String emailAddress, String timeZone) {
+	public Account getById(int id) {
 
 		Account account = null;
-
-		Transaction tx = null;
-		Session session = getSession();
-
 		try {
+
+			Session session = getSession();
+
+			account = (Account) session.get(Account.class, id);
+
+		} catch (Exception aex) {
+
+			throw new DaoException(aex);
+		}
+
+		return account;
+
+	}
+
+	@Override
+	public Account updateAccount(int id, Account account) {
+		
+		Session session = getSession();
+		Transaction tx = null;
+		try {
+
+			
 
 			tx = session.beginTransaction();
 
-			account = (Account) session.get(Account.class, id);
-			Account original = account;
+			Account original = (Account) session.get(Account.class, id);
 
-			if (account != null) {
+			if (account != null && original != null) {
 
-				if (name != null && emailAddress != null && timeZone != null) {
+				if (account.getName() != null && account.getEmailAddress() != null && account.getTimeZone() != null) {
 
-					if (!name.isEmpty()) {
-						account.setName(name);
-					} else {
+					if (account.getName().isEmpty()) {
 						account.setName(original.getName());
 					}
-
-					if (!emailAddress.isEmpty()) {
-						account.setEmailAddress(emailAddress);
-					} else {
+					if (account.getEmailAddress().isEmpty()) {
 						account.setEmailAddress(original.getEmailAddress());
 					}
-
-					if (!timeZone.isEmpty()) {
-						account.setTimeZone(timeZone);
-					} else {
+					if (account.getTimeZone().isEmpty()) {
 						account.setTimeZone(original.getTimeZone());
 					}
-
 					session.update(account);
 					tx.commit();
 				}
 			}
 
-		} catch (HibernateException e) {
+		} catch (Exception aex) {
 			if (tx != null)
 				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			// Need to see if this works or not. If not need to shift below finally.
-			if (account != null) {
-				account = (Account) session.get(Account.class, id);
-			}
-			closeSession(session);
+			throw new DaoException(aex);
+		}
+		// Need to see if this works or not. If not need to shift below finally.
+		if (account != null) {
+			account = (Account) session.get(Account.class, id);
 		}
 
 		return account;
@@ -161,12 +135,10 @@ public class AccountDaoHibernateImpl extends AbstractHibernateDao<Account, Integ
 
 	@Override
 	public void deleteAccount(int id) {
-
-		Transaction tx = null;
 		Session session = getSession();
-
+		Transaction tx = null;
 		try {
-
+			
 			tx = session.beginTransaction();
 
 			Account account = (Account) session.get(Account.class, id);
@@ -179,23 +151,41 @@ public class AccountDaoHibernateImpl extends AbstractHibernateDao<Account, Integ
 					for (Contact cont : contacts) {
 						manageContact.deleteContact(cont.getId());
 					}
-				}
-				if (alertProfiles != null) {
 					AlertProfileDao manageAlertProfile = AlertProfileDaoHibernateImpl.getDao();
-					for (AlertProfile aProfile : alertProfiles) {
-						manageAlertProfile.deleteAlertProfile(aProfile.getId());
+					for (AlertProfile alertProfile : alertProfiles) {
+						manageAlertProfile.deleteAlertProfile(alertProfile.getId());
 					}
 				}
+
 				session.delete(account);
 				tx.commit();
 			}
 
-		} catch (HibernateException e) {
+		} catch (Exception aex) {
 			if (tx != null)
 				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			closeSession(session);
+			throw new DaoException(aex);
 		}
+	}
+
+	public Account searchByUsername(String username) {
+
+		Account account = null;
+		try {
+
+			Session session = getSession();
+
+			if (username != null) {
+				Criteria criteria = session.createCriteria(Account.class);
+				criteria.add(Restrictions.eq("userName", username));
+				account = (Account) criteria.uniqueResult();
+			}
+		} catch (Exception aex) {
+
+			throw new DaoException(aex);
+		}
+
+		return account;
+		
 	}
 }

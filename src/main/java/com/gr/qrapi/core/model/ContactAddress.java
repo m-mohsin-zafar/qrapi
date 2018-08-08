@@ -2,45 +2,26 @@ package com.gr.qrapi.core.model;
 
 import java.io.Serializable;
 
-//@Entity
-//@Table(name = "qr_contact_address")
 public class ContactAddress implements Serializable{
 
-/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 
-//	@Id
-//	@GeneratedValue(strategy = GenerationType.IDENTITY)
-//	@Column(name = "id")
 	private int id;
-
-//	@Column(name = "street_address", length = 50)
 	private String streetAddress;
-
-//	@Column(name = "city", length = 30)
 	private String city;
-
-//	@Column(name = "state", length = 30)
 	private String state;
-
-//	@Column(name = "country", length = 30)
 	private String country;
-
-//	@OneToOne
-	private Contact contact;
 
 	public ContactAddress() {
 
 	}
 
-	public ContactAddress(String streetAddress, String city, String state, String country, Contact contact) {
+	public ContactAddress(String streetAddress, String city, String state, String country) {
 		this.streetAddress = streetAddress;
 		this.city = city;
 		this.state = state;
 		this.country = country;
-		this.contact = contact;
 	}
 	
 	
@@ -83,14 +64,6 @@ public class ContactAddress implements Serializable{
 
 	public void setCountry(String country) {
 		this.country = country;
-	}
-
-	public Contact getContact() {
-		return contact;
-	}
-
-	public void setContact(Contact contact) {
-		this.contact = contact;
 	}
 
 	@Override

@@ -8,12 +8,13 @@ import javax.ws.rs.core.Application;
 
 import com.gr.qrapi.ws.exception.WsExceptionHandler;
 import com.gr.qrapi.ws.filter.WsCorsFilter;
-import com.gr.qrapi.ws.v1.AdminResource;
+import com.gr.qrapi.ws.v1.AccountResource;
+import com.gr.qrapi.ws.v1.ContactResource;
 
 /**
  * This is main configuration file for rest application using rest easy
  * 
- * @author ufarooq
+ * @author Muhammad Mohsin Zafar
  */
 @ApplicationPath("/api")
 public class Main extends Application {
@@ -23,7 +24,8 @@ public class Main extends Application {
 
 	public Main() {
 		
-		classes.add(AdminResource.class);
+		classes.add(AccountResource.class);
+		classes.add(ContactResource.class);
 		classes.add(WsExceptionHandler.class);
 		classes.add(WsCorsFilter.class);
 		

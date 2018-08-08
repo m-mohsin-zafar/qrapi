@@ -10,8 +10,10 @@ import com.gr.qrapi.core.model.Account;
  */
 public interface AccountDao extends GenericDao<Account, Integer> {
 
-	public Account addAccount(String name, String emailAddress, String timeZone);
+	public Account addAccount(Account account);
 	public List<Account> viewAllAccounts();
-	public Account updateAccount(int id, String name, String emailAddress, String timeZone);
+	public Account getById(int id);
+	public Account updateAccount(int id, Account account);
 	public void deleteAccount(int id);
+	public Account searchByUsername(String username);
 }

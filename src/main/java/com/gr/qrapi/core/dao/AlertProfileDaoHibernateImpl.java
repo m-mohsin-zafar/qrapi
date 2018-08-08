@@ -11,6 +11,7 @@ import org.hibernate.criterion.Restrictions;
 
 import com.gr.common.dao.AbstractHibernateDao;
 import com.gr.common.dao.DaoManager;
+import com.gr.common.exception.DaoException;
 import com.gr.qrapi.core.model.AlertProfile;
 import com.gr.qrapi.core.model.Account;
 import com.gr.qrapi.core.model.AlertLocation;
@@ -43,23 +44,24 @@ public class AlertProfileDaoHibernateImpl extends AbstractHibernateDao<AlertProf
 
 					alertProfile = new AlertProfile();
 					alertProfile.setName(name);
-					alertProfile.setAccount(account);
+					
+					List<AlertProfile> alertProfiles = account.getAlertProfiles();
+					alertProfiles.add(alertProfile);
+					account.setAlertProfiles(alertProfiles);
 
 					tx = session.beginTransaction();
 					session.save(alertProfile);
+					session.update(account);
 					tx.commit();
 
 				}
 			}
 
-		} catch (HibernateException e) {
+		} catch (Exception e) {
 			if (tx != null)
 				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			closeSession(session);
+			throw new DaoException(e);
 		}
-
 		return alertProfile;
 	}
 
@@ -80,14 +82,11 @@ public class AlertProfileDaoHibernateImpl extends AbstractHibernateDao<AlertProf
 
 			tx.commit();
 
-		} catch (HibernateException e) {
+		} catch (Exception e) {
 			if (tx != null)
 				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			closeSession(session);
-		}
-
+			throw new DaoException(e);
+		} 
 		return alertProfiles;
 	}
 
@@ -116,21 +115,21 @@ public class AlertProfileDaoHibernateImpl extends AbstractHibernateDao<AlertProf
 						alertProfile.setName(original.getName());
 					}
 
-					alertProfile.setAccount(account);
+					List<AlertProfile> alertProfiles = account.getAlertProfiles();
+					alertProfiles.add(alertProfile);
+					account.setAlertProfiles(alertProfiles);
 
 					session.update(alertProfile);
+					session.update(account);
 					tx.commit();
 				}
 			}
 
-		} catch (HibernateException e) {
+		} catch (Exception e) {
 			if (tx != null)
 				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			closeSession(session);
-		}
-
+			throw new DaoException(e);
+		} 
 		if (alertProfile != null) {
 			alertProfile = (AlertProfile) session.get(AlertProfile.class, id);
 		}
@@ -165,58 +164,62 @@ public class AlertProfileDaoHibernateImpl extends AbstractHibernateDao<AlertProf
 				tx.commit();
 			}
 
-		} catch (HibernateException e) {
+		} catch (Exception e) {
 			if (tx != null)
 				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			closeSession(session);
+			throw new DaoException(e);
 		}
-
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<AlertProfile> findByCitynCountry(int accountId, String city, String country) {
-
-		List<AlertProfile> alertProfiles = null;
-
-		Session session = getSession();
-		Transaction tx = null;
-
-		try {
-
-			tx = session.beginTransaction();
-
-//			CriteriaBuilder builder = tc.getSessionObject().getCriteriaBuilder();
-//			CriteriaQuery<AlertProfile> criteria = builder.createQuery(AlertProfile.class);
-//			Root<AlertProfile> aProfileRoot = criteria.from(AlertProfile.class);
-//			criteria.select(aProfileRoot);
-//			criteria.where(
-//					builder.equal(aProfileRoot.ge, y))
-
-			Criteria criteria = session.createCriteria(AlertProfile.class).createAlias("account", "accountAlias")
-					.createAlias("locations", "alertLocs");
-
-			Criterion restCity = Restrictions.eq("alertLocs.city", city);
-			Criterion restCountry = Restrictions.eq("alertLocs.country", country);
-			Criterion restAccountId = Restrictions.eq("accountAlias.id", accountId);
-
-			// Criterion may be replaced by SimpleExpression, I guess....
-			criteria.add(Restrictions.and(restAccountId, Restrictions.or(restCity, restCountry)));
-
-			alertProfiles = criteria.list();
-			tx.commit();
-
-		} catch (HibernateException e) {
-			if (tx != null)
-				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			closeSession(session);
-		}
-
-		return alertProfiles;
+		// TODO Auto-generated method stub
+		return null;
 	}
+
+	
+	
+	
+	
+//	@SuppressWarnings("unchecked")
+//	@Override
+//	public List<AlertProfile> findByCitynCountry(int accountId, String city, String country) {
+//
+//		List<AlertProfile> alertProfiles = null;
+//
+//		Session session = getSession();
+//		Transaction tx = null;
+//
+//		try {
+//
+//			tx = session.beginTransaction();
+//
+////			CriteriaBuilder builder = tc.getSessionObject().getCriteriaBuilder();
+////			CriteriaQuery<AlertProfile> criteria = builder.createQuery(AlertProfile.class);
+////			Root<AlertProfile> aProfileRoot = criteria.from(AlertProfile.class);
+////			criteria.select(aProfileRoot);
+////			criteria.where(
+////					builder.equal(aProfileRoot.ge, y))
+//
+//			Criteria criteria = session.createCriteria(AlertProfile.class).createAlias("account", "accountAlias")
+//					.createAlias("locations", "alertLocs");
+//
+//			Criterion restCity = Restrictions.eq("alertLocs.city", city);
+//			Criterion restCountry = Restrictions.eq("alertLocs.country", country);
+//			Criterion restAccountId = Restrictions.eq("accountAlias.id", accountId);
+//
+//			// Criterion may be replaced by SimpleExpression, I guess....
+//			criteria.add(Restrictions.and(restAccountId, Restrictions.or(restCity, restCountry)));
+//
+//			alertProfiles = criteria.list();
+//			tx.commit();
+//
+//		} catch (Exception e) {
+//			if (tx != null)
+//				tx.rollback();
+//			throw new DaoException(e);
+//		} 
+//		return alertProfiles;
+//	}
 
 }

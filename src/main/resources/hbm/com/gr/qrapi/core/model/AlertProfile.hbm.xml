@@ -11,14 +11,10 @@
         <property name="name" type="java.lang.String">
             <column name="profile_name" />
         </property>
-        <many-to-one name="account" class="com.gr.qrapi.core.model.Account" fetch="join" not-null="true" update="false" insert="false">
-            <column name="account_id" />
-        </many-to-one>
-        <bag name="locations" inverse="true" table="qr_alert_location" lazy="true" >
-            <key not-null="true">
+        <bag name="locations" inverse="false" table="qr_alert_location" lazy="false">
+            <key>
                 <column name="profile_id" />
             </key>
-<!--             <list-index></list-index> -->
             <one-to-many class="com.gr.qrapi.core.model.AlertLocation" />
         </bag>
     </class>
