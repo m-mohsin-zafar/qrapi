@@ -11,6 +11,9 @@
 			<column name="address_id" />
 			<generator class="native" />
 		</id>
+		<property name="contactId">
+			<column name="contact_id"></column>
+		</property>
 		<property name="streetAddress" type="java.lang.String">
 			<column name="street_address" />
 		</property>

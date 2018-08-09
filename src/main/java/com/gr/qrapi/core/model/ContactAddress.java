@@ -8,6 +8,7 @@ public class ContactAddress implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	private int id;
+	private int contactId;
 	private String streetAddress;
 	private String city;
 	private String state;
@@ -70,6 +71,14 @@ public class ContactAddress implements Serializable{
 	public String toString() {
 		return "ContactAddress [streetAddress=" + streetAddress + ", city=" + city + ", state=" + state + ", country="
 				+ country + "]";
+	}
+
+	public int getContactId() {
+		return contactId;
+	}
+
+	public void setContactId(int contactId) {
+		this.contactId = contactId;
 	}
 
 }

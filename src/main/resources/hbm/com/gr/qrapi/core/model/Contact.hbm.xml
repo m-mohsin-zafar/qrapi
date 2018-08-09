@@ -8,6 +8,9 @@
 			<column name="contact_id" />
 			<generator class="native" />
 		</id>
+		<property name="accountId" type="int">
+			<column name="account_id"></column>
+		</property>
 		<property name="firstName" type="java.lang.String">
 			<column name="first_name" />
 		</property>
@@ -26,7 +29,7 @@
 		<property name="status" type="java.lang.String">
 			<column name="status" />
 		</property>
-		<bag name="contactAddresses" inverse="false" table="qr_contact" lazy="false" >
+		<bag name="contactAddresses" inverse="false" table="qr_contact" lazy="false">
             <key>
                 <column name="contact_id" />
             </key>

@@ -55,7 +55,9 @@ public class ContactResource {
 	}
 	
 	@POST
-	public Response addContact(Contact contact, ContactAddress contactAddress, @PathParam("accountid") int accountId) {
+	public Response addContact(Contact contact, @PathParam("accountid") int accountId) {
+		
+		ContactAddress contactAddress = (ContactAddress) contact.getContactAddresses().get(0);
 		contact = contactService.addContact(contact, accountId, contactAddress);
 		if (contact == null) {
 			return Response.status(Status.BAD_REQUEST).build();

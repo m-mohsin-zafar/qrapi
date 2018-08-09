@@ -8,6 +8,7 @@ public class Contact implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	private int id;
+	private int accountId;
 	private String firstName;
 	private String lastName;
 	private String emailAddress;
@@ -98,6 +99,14 @@ public class Contact implements Serializable{
 	public String toString() {
 		return "Contact [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", emailAddress="
 				+ emailAddress + ", gender=" + gender + ", phoneNumber=" + phoneNumber + ", status=" + status + "]";
+	}
+
+	public int getAccountId() {
+		return accountId;
+	}
+
+	public void setAccountId(int accountId) {
+		this.accountId = accountId;
 	}
 	
 		

@@ -37,6 +37,9 @@ public class ContactDaoHibernateImpl extends AbstractHibernateDao<Contact, Integ
 
 			if (account != null) {
 
+				contact.setAccountId(accountId);
+				
+
 				if (!contact.getFirstName().isEmpty() && !contact.getLastName().isEmpty()
 						&& !contact.getEmailAddress().isEmpty() && !contact.getGender().isEmpty()
 						&& !contact.getPhoneNumber().isEmpty() && !contact.getStatus().isEmpty()
@@ -44,21 +47,30 @@ public class ContactDaoHibernateImpl extends AbstractHibernateDao<Contact, Integ
 						&& !contactAddress.getStreetAddress().isEmpty() && !contactAddress.getCity().isEmpty()
 						&& !contactAddress.getState().isEmpty() && !contactAddress.getCountry().isEmpty()) {
 
+					contact.setContactAddresses(null);
+					
 					List<Contact> contacts = account.getContacts();
 					contacts.add(contact);
 					account.setContacts(contacts);
 
-					List<ContactAddress> contactAddresses = contact.getContactAddresses();
-					contactAddresses.add(contactAddress);
-					contact.setContactAddresses(contactAddresses);
+					
+//					 List<ContactAddress> contactAddresses = contact.getContactAddresses();
+//					 contactAddresses.add(contactAddress);
+//					 contact.setContactAddresses(contactAddresses);
+					 
+
+//					tx = session.beginTransaction();
+//					session.saveOrUpdate(account);
+//					tx.commit();
 
 					tx = session.beginTransaction();
-
-					session.saveOrUpdate(account);
-					session.saveOrUpdate(contacts);
-					session.saveOrUpdate(contactAddresses);
-
+					session.saveOrUpdate(contact);
 					tx.commit();
+					
+					contactAddress.setContactId(contact.getId());
+					session.saveOrUpdate(contactAddress);
+					
+					
 
 				}
 			}
@@ -200,7 +212,8 @@ public class ContactDaoHibernateImpl extends AbstractHibernateDao<Contact, Integ
 
 					Query query = session.createQuery("update Contact set first_name = :fName,"
 							+ "last_name = :lName, email_address = :emailId, gender = :Gender, "
-							+ "phone_number = :phoneNum, status = :Status where contact_id = " + original.getId());
+							+ "phone_number = :phoneNum, status = :Status, account_id = :accID where contact_id = "
+							+ original.getId());
 
 					query.setParameter("fName", contact.getFirstName());
 					query.setParameter("lName", contact.getLastName());
@@ -208,16 +221,18 @@ public class ContactDaoHibernateImpl extends AbstractHibernateDao<Contact, Integ
 					query.setParameter("Gender", contact.getGender());
 					query.setParameter("phoneNum", contact.getPhoneNumber());
 					query.setParameter("Status", contact.getStatus());
+					query.setParameter("accID", accountId);
 					query.executeUpdate();
 
 					Query query2 = session.createQuery("update ContactAddress set street_address = :strAdr, "
-							+ "city = :City, state = :State, country = :Country where address_id = "
+							+ "city = :City, state = :State, country, contact_id = :conID = :Country where address_id = "
 							+ contactAddress.getId());
 
 					query2.setParameter("strAdr", contactAddress.getStreetAddress());
 					query2.setParameter("City", contactAddress.getCity());
 					query2.setParameter("State", contactAddress.getState());
 					query2.setParameter("Country", contactAddress.getCountry());
+					query2.setParameter("conID", contact.getId());
 					query2.executeUpdate();
 
 					tx.commit();
@@ -258,8 +273,7 @@ public class ContactDaoHibernateImpl extends AbstractHibernateDao<Contact, Integ
 			if (contact != null) {
 				contactAddress = (ContactAddress) contact.getContactAddresses().get(0);
 				if (contactAddress != null) {
-					query = session
-							.createQuery("delete ContactAddress where address_id = " + contactAddress.getId());
+					query = session.createQuery("delete ContactAddress where address_id = " + contactAddress.getId());
 					query.executeUpdate();
 				}
 				query = session.createQuery("delete Contact where contact_id = " + contact.getId());
