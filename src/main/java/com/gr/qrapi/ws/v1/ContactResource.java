@@ -17,6 +17,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import com.gr.qrapi.core.model.Contact;
+import com.gr.qrapi.core.model.ContactAddress;
 import com.gr.qrapi.core.service.ContactService;
 import com.gr.qrapi.core.service.ContactServiceLocal;
 
@@ -42,12 +43,20 @@ public class ContactResource {
 	@Path("/list")
 	public List<Contact> getContactsById(@PathParam("accountid") int accountID) {
 
-		return contactService.getContactById(accountID);
+		return contactService.getContactsByAccountId(accountID);
 	}
-
+	
+	@GET
+	@Path("/find/{id}")
+	public Contact findContactById (@PathParam("id") int id) {
+		
+		return contactService.findContactById(id);
+		
+	}
+	
 	@POST
-	public Response addContact(Contact contact, @PathParam("accountid") int accountId) {
-		contact = contactService.addContact(contact, accountId);
+	public Response addContact(Contact contact, ContactAddress contactAddress, @PathParam("accountid") int accountId) {
+		contact = contactService.addContact(contact, accountId, contactAddress);
 		if (contact == null) {
 			return Response.status(Status.BAD_REQUEST).build();
 		}
@@ -67,7 +76,15 @@ public class ContactResource {
 	@DELETE
 	@Path("/{id}")
 	public Response deleteContact(@PathParam("id") int id) {
-		// delete contact from database
+		contactService.deleteContact(id);
 		return Response.ok().build();
+	}
+	
+	@GET
+	@Path("/LocationList")
+	public List<ContactAddress> getAddressesByAccount(@PathParam("accountid") int accountId){
+		
+		return contactService.getAddressesByAccount(accountId);
+		
 	}
 }
