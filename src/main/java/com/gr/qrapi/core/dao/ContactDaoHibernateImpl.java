@@ -198,7 +198,7 @@ public class ContactDaoHibernateImpl extends AbstractHibernateDao<Contact, Integ
 						contactAddress.setCountry(originalAddress.getCountry());
 					}
 
-					Query query = session.createQuery("update qr_contact set first_name = :fName,"
+					Query query = session.createQuery("update Contact set first_name = :fName,"
 							+ "last_name = :lName, email_address = :emailId, gender = :Gender, "
 							+ "phone_number = :phoneNum, status = :Status where contact_id = " + original.getId());
 
@@ -210,7 +210,7 @@ public class ContactDaoHibernateImpl extends AbstractHibernateDao<Contact, Integ
 					query.setParameter("Status", contact.getStatus());
 					query.executeUpdate();
 
-					Query query2 = session.createQuery("update qr_contact_address set street_address = :strAdr, "
+					Query query2 = session.createQuery("update ContactAddress set street_address = :strAdr, "
 							+ "city = :City, state = :State, country = :Country where address_id = "
 							+ contactAddress.getId());
 
@@ -259,10 +259,10 @@ public class ContactDaoHibernateImpl extends AbstractHibernateDao<Contact, Integ
 				contactAddress = (ContactAddress) contact.getContactAddresses().get(0);
 				if (contactAddress != null) {
 					query = session
-							.createQuery("delete qr_contact_address where address_id = " + contactAddress.getId());
+							.createQuery("delete ContactAddress where address_id = " + contactAddress.getId());
 					query.executeUpdate();
 				}
-				query = session.createQuery("delete qr_contact where contact_id = " + contact.getId());
+				query = session.createQuery("delete Contact where contact_id = " + contact.getId());
 				query.executeUpdate();
 				tx.commit();
 			}
