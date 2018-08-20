@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="com.gr.qrapi.core.model.UrlAnalytics"
+		table="url_analytics">
+		<id name="id" type="int">
+			<column name="url_analytics_id" />
+			<generator class="native" />
+		</id>
+		<property name="urlId" type="int">
+			<column name="url_id" />
+		</property>
+		<property name="totalClicksCount" type="int">
+			<column name="total_clicks_count" />
+		</property>
+		<property name="yearOfClicks" type="java.util.Date">
+			<column name="year_of_clicks" />
+		</property>
+		<bag name="platforms" inverse="false" table="platforms"
+			lazy="false">
+			<key>
+				<column name="url_analytics_id" />
+			</key>
+			<one-to-many class="com.gr.qrapi.core.model.Platforms" />
+		</bag>
+		<bag name="browsers" inverse="false" table="browsers" lazy="false">
+			<key>
+				<column name="url_analytics_id" />
+			</key>
+			<one-to-many class="com.gr.qrapi.core.model.Browsers" />
+		</bag>
+	</class>
+</hibernate-mapping>

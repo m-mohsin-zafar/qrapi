@@ -10,6 +10,7 @@ import com.gr.qrapi.ws.exception.WsExceptionHandler;
 import com.gr.qrapi.ws.filter.WsCorsFilter;
 import com.gr.qrapi.ws.v1.AccountResource;
 import com.gr.qrapi.ws.v1.ContactResource;
+import com.gr.qrapi.ws.v1.QRUrlResource;
 
 /**
  * This is main configuration file for rest application using rest easy
@@ -26,6 +27,7 @@ public class Main extends Application {
 		
 		classes.add(AccountResource.class);
 		classes.add(ContactResource.class);
+		classes.add(QRUrlResource.class);
 		classes.add(WsExceptionHandler.class);
 		classes.add(WsCorsFilter.class);
 		

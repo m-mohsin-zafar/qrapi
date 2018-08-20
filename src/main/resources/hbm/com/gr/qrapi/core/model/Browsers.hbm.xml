@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="com.gr.qrapi.core.model.Browsers" table="browsers">
+        <id name="id" type="int">
+            <column name="id" />
+            <generator class="native" />
+        </id>
+        <property name="urlAnalyticsId" type="int">
+            <column name="url_analytics_id" />
+        </property>
+        <property name="ieClicks" type="int">
+            <column name="ie_clicks" />
+        </property>
+        <property name="chromeclicks" type="int">
+            <column name="chrome_clicks" />
+        </property>
+        <property name="safariClicks" type="int">
+            <column name="safari_clicks" />
+        </property>
+        <property name="fireforxClicks" type="int">
+            <column name="fireforx_clicks" />
+        </property>
+        <property name="othersClicks" type="int">
+            <column name="others_clicks" />
+        </property>
+    </class>
+</hibernate-mapping>

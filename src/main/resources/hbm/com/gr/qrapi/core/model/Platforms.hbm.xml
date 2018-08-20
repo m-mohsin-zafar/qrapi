@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="com.gr.qrapi.core.model.Platforms" table="platforms">
+        <id name="id" type="int">
+            <column name="id" />
+            <generator class="native" />
+        </id>
+        <property name="urlAnalyticsId" type="int">
+            <column name="url_analytics_id" />
+        </property>
+        <property name="windowsClicks" type="int">
+            <column name="windows_clicks" />
+        </property>
+        <property name="androidClicks" type="int">
+            <column name="android_clicks" />
+        </property>
+        <property name="iphoneClicks" type="int">
+            <column name="iphone_clicks" />
+        </property>
+        <property name="macClicks" type="int">
+            <column name="mac_clicks" />
+        </property>
+        <property name="x11Clicks" type="int">
+            <column name="x11_clicks" />
+        </property>
+        <property name="OtherClicks" type="int">
+            <column name="other_clicks" />
+        </property>
+    </class>
+</hibernate-mapping>

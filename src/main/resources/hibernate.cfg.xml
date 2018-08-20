@@ -15,6 +15,15 @@
 		resource="hbm/com/gr/qrapi/core/model/AlertProfile.hbm.xml" />
  		<mapping
 		resource="hbm/com/gr/qrapi/core/model/AlertLocation.hbm.xml" /> 
+		
+		<mapping
+		resource="hbm/com/gr/qrapi/core/model/QRUrl.hbm.xml" /> 
+		<mapping
+		resource="hbm/com/gr/qrapi/core/model/UrlAnalytics.hbm.xml" /> 
+		<mapping
+		resource="hbm/com/gr/qrapi/core/model/Browsers.hbm.xml" /> 
+		<mapping
+		resource="hbm/com/gr/qrapi/core/model/Platforms.hbm.xml" /> 
 
 	</session-factory>
 </hibernate-configuration>
