@@ -1,5 +1,7 @@
 package com.gr.qrapi.ws.v1;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -49,6 +51,20 @@ public class QRUrlResource {
 	@Path("/detail")
 	public QRUrl getDetailsById(@QueryParam("id") int id) {
 		return urlShortnerService.getDetailsById(id);
+	}
+	
+	@GET
+	@Path("/verifynroute")
+	public String verifyAndRouteUrl(@QueryParam("id") int id) {
+		QRUrl qrurl = urlShortnerService.getDetailsById(id);
+		Date today = Date.valueOf(LocalDate.now());
+		String responseMessage = "";
+		if(today.compareTo(qrurl.getExpiryDate()) <=0 ) {
+			responseMessage = "{ \"value\" : \""+qrurl.getOriginalUrl()+"\"}";
+		}else {
+			responseMessage = "{ \"value\" : \"expired\" }";
+		}
+		return responseMessage;
 	}
 	
 	@GET

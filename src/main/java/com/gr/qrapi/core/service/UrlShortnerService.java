@@ -1,11 +1,12 @@
 package com.gr.qrapi.core.service;
 
-import javax.ejb.Stateless;
-
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
+
+import javax.ejb.Stateless;
 
 import com.gr.common.service.ServiceManager;
 import com.gr.qrapi.core.dao.UrlDaoHibernateImpl;
@@ -26,7 +27,7 @@ public class UrlShortnerService implements UrlShortnerServiceLocal {
 	@Override
 	public QRUrl addShortUrl(QRUrl qrurl) {
 
-		qrurl.setShortUrl(generateShortUrl(qrurl.getOriginalUrl()));
+		qrurl.setShortUrl(generateShortUrl());
 		
 		LocalDate today =LocalDate.now();
 		qrurl.setDateCreated(Date.valueOf(today));
@@ -65,22 +66,21 @@ public class UrlShortnerService implements UrlShortnerServiceLocal {
 		return UrlDaoHibernateImpl.getDao().getByYearClicks(id);
 	}
 
-	private String generateShortUrl(String original_url) {
+	private String generateShortUrl(){
 
 		String short_url = null;
-		String[] parts = original_url.split("[.]");
-
-		if (original_url != null) {
-			if(parts[2].contains("/")) {
-				String[] subPart = parts[2].split("[/]");
-				short_url = parts[0]+"." + parts[1].substring(0, (parts[1].length() / 3))
-						+ subPart[1].substring(((subPart[1].length() / 3) * 2)) + parts[1].length() + "." + subPart[0];
-			}else {
-				short_url = parts[0]+"." + parts[1].substring(0, (parts[1].length() / 3))
-						+ parts[1].substring(((parts[1].length() / 3) * 2)) + parts[1].length() + "." + parts[2];
-			}
-			
+		String prefix = "http://myapp/gr";
+		
+		SecureRandom crunchifyPRNG = null;
+		try {
+			crunchifyPRNG = SecureRandom.getInstance("SHA1PRNG");
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		String randomNumber = new Integer(Math.abs(crunchifyPRNG.nextInt())).toString();
+		
+		short_url = prefix + randomNumber;
 
 		return short_url;
 	}
